@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      # point at your local Directus instance
+      - VITE_API_URL=http://localhost:8055
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev
+    depends_on:
+      - directus
+
+  directus:
+    image: directus/directus:latest
+    ports:
+      - "8055:8055"
+    environment:
+      # change these to your preferred admin credentials & key
+      KEY: supersecretkey
+      ADMIN_EMAIL: admin@example.com
+      ADMIN_PASSWORD: password123
+      DATABASE_CLIENT: sqlite3
+      DATABASE_FILENAME: /data/database.db
+    volumes:
+      - directus_data:/data
+
+volumes:
+  directus_data:
